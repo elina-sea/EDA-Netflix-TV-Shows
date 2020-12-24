@@ -1,5 +1,5 @@
 ---
-title: "EDA on TV Shows and Movies available on Netflix"
+title: "EDA on 240 Stars Among 5 Star Types"
 output:
   html_document:
     df_print: paged
@@ -39,17 +39,16 @@ library(ggplot2)
 stars <- read_csv("Stars.csv")
 ```
 
-  As we can observe from this data set has majorly quantitative variables: `temperature measured in Kelvins, luminosity (with respect to Sun), radius (with respect to Sun), absolute visual magnitude, star type` and minorly of qualitative variables: `star color, spectral class`.
+  As we can observe this data set has majorly quantitative variables: `temperature measured in Kelvins, luminosity (with respect to Sun), radius (with respect to Sun), absolute visual magnitude, star type` and minorly of qualitative variables: `star color, spectral class`.
   
 #### Reasoning for using this data set
   Some of the tasks to be performed and aspects to be explored:
   
 ### Analysing missing values 
 
-```{r message = FALSE}
+```{r message=FALSE, paged.print=FALSE, echo=FALSE}
 library(VIM)
 library(naniar)
-library(ggplot2)
 #plot missing values with naniar pkg which is based on ggplot2
 gg_miss_var(stars)
 #plot proportions of missing values and their combos with vim aggr 
@@ -58,13 +57,156 @@ summary(aggr(stars))
 
   As we can see, there are no missing values in this data set. Which means we can assume that all relations will be reliable.
   
-```{r}
-#stars <- c(stars$type)
+## Now let's have fun and explore distribution of each parameter individually
+
+  On the following graphs distribution of each parameter among all star types is shown.
+  
+  
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(cowplot)
+
+stars_temperature <- c(stars$`Temperature (K)`)
+stars_luminosity <- c(stars$`Luminosity(L/Lo)`)
+stars_radius <- c(stars$`Radius(R/Ro)`)
+stars_magnitute_absolute <- c(stars$`Absolute magnitude(Mv)`)
+
+df_stars <- data.frame(stars)
+
+p_temp <- ggplot(df_stars, aes(stars_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum <- ggplot(df_stars, aes(stars_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad <- ggplot(df_stars, aes(stars_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn <- ggplot(df_stars, aes(stars_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+plot_grid(p_temp, p_lum, p_rad, p_magn)
+
+#TODO Какие цвета самые распространенные
+#TODO Какие классы (спектрал) самые распространенные
+#TODO Предыдущие параметры в рамках класса + типа
+#vignette("ggplot2-specs")
+```
+ 
+ 
+  But let's remember that there are 6 types of stars in the dataset. Let's see how all 240 stars are distributed among those types.
+  
+  
+  
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+star_type <- c(stars$`Star type`)
+p_type <- ggplot(df_stars, aes(star_type)) + geom_histogram(aes(y = ..density..)) + geom_density()
+show(p_type)
+
+```
+ 
+ 
+  From the plot above we can conclude that there's an even amount of each star type presented in data set. But does it mean that all of the distributions we explored earlier (temperature, luminosity, radius, magnitude) will remain the same in terms of every type individually?
+Let's find out.
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+#TYPE O
+stype0 <- stars[stars$`Star type`=="0",]
+
+df_stype0 <- data.frame(stype0)
+
+stype0_temperature <- c(stype0$`Temperature (K)`)
+stype0_luminosity <- c(stype0$`Luminosity(L/Lo)`)
+stype0_radius <- c(stype0$`Radius(R/Ro)`)
+stype0_magnitute_absolute <- c(stype0$`Absolute magnitude(Mv)`)
+
+p_temp_stype0 <- ggplot(df_stype0, aes(stype0_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_stype0 <- ggplot(df_stype0, aes(stype0_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_stype0 <- ggplot(df_stype0, aes(stype0_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_stype0 <- ggplot(df_stype0, aes(stype0_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+
+#TYPE 1
+stype1 <- stars[stars$`Star type`=="1",]
+
+df_stype1 <- data.frame(stype1)
+
+stype1_temperature <- c(stype1$`Temperature (K)`)
+stype1_luminosity <- c(stype1$`Luminosity(L/Lo)`)
+stype1_radius <- c(stype1$`Radius(R/Ro)`)
+stype1_magnitute_absolute <- c(stype1$`Absolute magnitude(Mv)`)
+
+p_temp_stype1 <- ggplot(df_stype1, aes(stype1_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_stype1 <- ggplot(df_stype1, aes(stype1_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_stype1 <- ggplot(df_stype1, aes(stype1_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_stype1 <- ggplot(df_stype1, aes(stype1_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+
+#TYPE 2
+stype2 <- stars[stars$`Star type`=="2",]
+
+df_stype2 <- data.frame(stype2)
+
+stype2_temperature <- c(stype2$`Temperature (K)`)
+stype2_luminosity <- c(stype2$`Luminosity(L/Lo)`)
+stype2_radius <- c(stype2$`Radius(R/Ro)`)
+stype2_magnitute_absolute <- c(stype2$`Absolute magnitude(Mv)`)
+
+p_temp_stype2 <- ggplot(df_stype2, aes(stype2_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_stype2 <- ggplot(df_stype2, aes(stype2_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_stype2 <- ggplot(df_stype2, aes(stype2_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_stype2 <- ggplot(df_stype2, aes(stype2_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+
+#TYPE 3
+stype3 <- stars[stars$`Star type`=="3",]
+
+df_stype3 <- data.frame(stype3)
+
+stype3_temperature <- c(stype3$`Temperature (K)`)
+stype3_luminosity <- c(stype3$`Luminosity(L/Lo)`)
+stype3_radius <- c(stype3$`Radius(R/Ro)`)
+stype3_magnitute_absolute <- c(stype3$`Absolute magnitude(Mv)`)
+
+p_temp_stype3 <- ggplot(df_stype3, aes(stype3_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_stype3 <- ggplot(df_stype3, aes(stype3_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_stype3 <- ggplot(df_stype3, aes(stype3_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_stype3 <- ggplot(df_stype3, aes(stype3_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+
+#TYPE 4
+stype4 <- stars[stars$`Star type`=="4",]
+
+df_stype4 <- data.frame(stype4)
+
+stype4_temperature <- c(stype4$`Temperature (K)`)
+stype4_luminosity <- c(stype4$`Luminosity(L/Lo)`)
+stype4_radius <- c(stype4$`Radius(R/Ro)`)
+stype4_magnitute_absolute <- c(stype4$`Absolute magnitude(Mv)`)
+
+p_temp_stype4 <- ggplot(df_stype4, aes(stype4_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_stype4 <- ggplot(df_stype4, aes(stype4_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_stype4 <- ggplot(df_stype4, aes(stype4_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_stype4 <- ggplot(df_stype4, aes(stype4_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+
+#TYPE 5
+stype5 <- stars[stars$`Star type`=="5",]
+
+df_stype5 <- data.frame(stype5)
+
+stype5_temperature <- c(stype5$`Temperature (K)`)
+stype5_luminosity <- c(stype5$`Luminosity(L/Lo)`)
+stype5_radius <- c(stype5$`Radius(R/Ro)`)
+stype5_magnitute_absolute <- c(stype5$`Absolute magnitude(Mv)`)
+
+p_temp_stype5 <- ggplot(df_stype5, aes(stype5_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_stype5 <- ggplot(df_stype5, aes(stype5_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_stype5 <- ggplot(df_stype5, aes(stype5_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_stype5 <- ggplot(df_stype5, aes(stype5_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+
+plot_grid(p_temp_stype0, p_temp_stype1, p_temp_stype2, p_temp_stype3, p_temp_stype4, p_temp_stype5)
+plot_grid(p_lum_stype0, p_lum_stype1, p_lum_stype2, p_lum_stype3, p_lum_stype4, p_lum_stype5)
+plot_grid(p_rad_stype0, p_rad_stype1, p_rad_stype2, p_rad_stype3, p_rad_stype4, p_rad_stype5)
+plot_grid(p_magn_stype0, p_magn_stype1, p_magn_stype2, p_magn_stype3, p_magn_stype4, p_magn_stype5)
 
 ```
 
-  
-  
+
   
   
   
