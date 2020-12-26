@@ -69,6 +69,7 @@ stars_temperature <- c(stars$`Temperature (K)`)
 stars_luminosity <- c(stars$`Luminosity(L/Lo)`)
 stars_radius <- c(stars$`Radius(R/Ro)`)
 stars_magnitute_absolute <- c(stars$`Absolute magnitude(Mv)`)
+stars_type <- c(stars$`Star type`)
 
 df_stars <- data.frame(stars)
 
@@ -79,10 +80,14 @@ p_magn <- ggplot(df_stars, aes(stars_magnitute_absolute)) + geom_histogram(aes(y
 
 plot_grid(p_temp, p_lum, p_rad, p_magn)
 
-#TODO Какие цвета самые распространенные
+#TODO Какие цвета самые распространенные - для этого посчитать каждый 
 #TODO Какие классы (спектрал) самые распространенные
 #TODO Предыдущие параметры в рамках класса + типа
 #vignette("ggplot2-specs")
+#groupby(['quarter', 'brand'])\
+ #     .brand.count().unstack().plot.bar(legend=True)
+
+
 ```
  
  
@@ -106,7 +111,7 @@ Let's find out.
 #TYPE O
 stype0 <- stars[stars$`Star type`=="0",]
 
-df_stype0 <- data.frame(stype0)
+df_stype0 <- data.frame(stype0, stringsAsFactors=FALSE)
 
 stype0_temperature <- c(stype0$`Temperature (K)`)
 stype0_luminosity <- c(stype0$`Luminosity(L/Lo)`)
@@ -207,10 +212,142 @@ plot_grid(p_magn_stype0, p_magn_stype1, p_magn_stype2, p_magn_stype3, p_magn_sty
 ```
 
 
+  But let's not forget that we also have stars divided according to their spectral class - not only types. 
+  How many stars are represented in each spectral class? Let's see:
+
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+
+sclassO <- stars[stars$`Spectral Class` == "O",]
+sclassB <- stars[stars$`Spectral Class` == "B",]
+sclassA <- stars[stars$`Spectral Class` == "A",]
+sclassF <- stars[stars$`Spectral Class` == "F",]
+sclassG <- stars[stars$`Spectral Class` == "G",]
+sclassK <- stars[stars$`Spectral Class` == "K",]
+sclassM <- stars[stars$`Spectral Class` == "M",]
+
+sclassO_value <- nrow(sclassO)
+sclassB_value <- nrow(sclassB)
+sclassA_value <- nrow(sclassA)
+sclassF_value <- nrow(sclassF)
+sclassG_value <- nrow(sclassG)
+sclassK_value <- nrow(sclassK)
+sclassM_value <- nrow(sclassM) 
+
+all_classes <- c(sclassO_value, sclassB_value, sclassA_value, sclassF_value, sclassG_value, sclassK_value, sclassM_value)
+
+show(all_classes)
+
+```
+```
+Class
+        O   B   A   F   G   K   M
   
+```
   
+  Let's also observe how previously examined parameters are distributed in terms of each class:
   
-  
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(cowplot)
+
+#CLASS O
+df_scalssO <- data.frame(sclassO)
+
+sclassO_temperature <- c(sclassO$`Temperature (K)`)
+sclassO_luminosity <- c(sclassO$`Luminosity(L/Lo)`)
+sclassO_radius <- c(sclassO$`Radius(R/Ro)`)
+sclassO_magnitute_absolute <- c(sclassO$`Absolute magnitude(Mv)`)
+
+p_temp_sclassO <- ggplot(df_scalssO, aes(sclassO_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassO <- ggplot(df_scalssO, aes(sclassO_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassO <- ggplot(df_scalssO, aes(sclassO_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassO <- ggplot(df_scalssO, aes(sclassO_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#CLASS B
+df_scalssB <- data.frame(sclassB)
+
+sclassB_temperature <- c(sclassB$`Temperature (K)`)
+sclassB_luminosity <- c(sclassB$`Luminosity(L/Lo)`)
+sclassB_radius <- c(sclassB$`Radius(R/Ro)`)
+sclassB_magnitute_absolute <- c(sclassB$`Absolute magnitude(Mv)`)
+
+p_temp_sclassB <- ggplot(df_scalssB, aes(sclassB_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassB <- ggplot(df_scalssB, aes(sclassB_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassB <- ggplot(df_scalssB, aes(sclassB_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassB <- ggplot(df_scalssB, aes(sclassB_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#CLASS A
+df_scalssA <- data.frame(sclassA)
+
+sclassA_temperature <- c(sclassA$`Temperature (K)`)
+sclassA_luminosity <- c(sclassA$`Luminosity(L/Lo)`)
+sclassA_radius <- c(sclassA$`Radius(R/Ro)`)
+sclassA_magnitute_absolute <- c(sclassA$`Absolute magnitude(Mv)`)
+
+p_temp_sclassA <- ggplot(df_scalssA, aes(sclassA_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassA <- ggplot(df_scalssA, aes(sclassA_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassA <- ggplot(df_scalssA, aes(sclassA_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassA <- ggplot(df_scalssA, aes(sclassA_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#CLASS F
+df_scalssF <- data.frame(sclassF)
+
+sclassF_temperature <- c(sclassF$`Temperature (K)`)
+sclassF_luminosity <- c(sclassF$`Luminosity(L/Lo)`)
+sclassF_radius <- c(sclassF$`Radius(R/Ro)`)
+sclassF_magnitute_absolute <- c(sclassF$`Absolute magnitude(Mv)`)
+
+p_temp_sclassF <- ggplot(df_scalssF, aes(sclassF_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassF <- ggplot(df_scalssF, aes(sclassF_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassF <- ggplot(df_scalssF, aes(sclassF_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassF <- ggplot(df_scalssF, aes(sclassF_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#CLASS G
+df_scalssG <- data.frame(sclassG)
+
+sclassG_temperature <- c(sclassG$`Temperature (K)`)
+sclassG_luminosity <- c(sclassG$`Luminosity(L/Lo)`)
+sclassG_radius <- c(sclassG$`Radius(R/Ro)`)
+sclassG_magnitute_absolute <- c(sclassG$`Absolute magnitude(Mv)`)
+
+p_temp_sclassG <- ggplot(df_scalssG, aes(sclassG_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassG <- ggplot(df_scalssG, aes(sclassG_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassG <- ggplot(df_scalssG, aes(sclassG_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassG <- ggplot(df_scalssG, aes(sclassG_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#CLASS K
+df_scalssK <- data.frame(sclassK)
+
+sclassK_temperature <- c(sclassK$`Temperature (K)`)
+sclassK_luminosity <- c(sclassK$`Luminosity(L/Lo)`)
+sclassK_radius <- c(sclassK$`Radius(R/Ro)`)
+sclassK_magnitute_absolute <- c(sclassK$`Absolute magnitude(Mv)`)
+
+p_temp_sclassK <- ggplot(df_scalssK, aes(sclassK_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassK <- ggplot(df_scalssK, aes(sclassK_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassK <- ggplot(df_scalssK, aes(sclassK_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassK <- ggplot(df_scalssK, aes(sclassK_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#CLASS M
+df_scalssM <- data.frame(sclassM)
+
+sclassM_temperature <- c(sclassM$`Temperature (K)`)
+sclassM_luminosity <- c(sclassM$`Luminosity(L/Lo)`)
+sclassM_radius <- c(sclassM$`Radius(R/Ro)`)
+sclassM_magnitute_absolute <- c(sclassM$`Absolute magnitude(Mv)`)
+
+p_temp_sclassM <- ggplot(df_scalssM, aes(sclassM_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_lum_sclassM <- ggplot(df_scalssM, aes(sclassM_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_rad_sclassM <- ggplot(df_scalssM, aes(sclassM_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+p_magn_sclassM <- ggplot(df_scalssM, aes(sclassM_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
+
+#PLOT
+plot_grid(p_temp_sclassO, p_temp_sclassB, p_temp_sclassA, p_temp_sclassF, p_temp_sclassG, p_temp_sclassK, p_temp_sclassM)
+plot_grid(p_lum_sclassO, p_lum_sclassB, p_lum_sclassA, p_lum_sclassF, p_lum_sclassG, p_lum_sclassK, p_lum_sclassM)
+plot_grid(p_rad_sclassO, p_rad_sclassB, p_rad_sclassA, p_rad_sclassF, p_rad_sclassG, p_rad_sclassK, p_rad_sclassM)
+plot_grid(p_magn_sclassO, p_magn_sclassB, p_magn_sclassA, p_magn_sclassF, p_magn_sclassG, p_magn_sclassK, p_magn_sclassM)
+```
   
   
   
