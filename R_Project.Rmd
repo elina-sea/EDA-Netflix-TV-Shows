@@ -80,13 +80,6 @@ p_magn <- ggplot(df_stars, aes(stars_magnitute_absolute)) + geom_histogram(aes(y
 
 plot_grid(p_temp, p_lum, p_rad, p_magn)
 
-#TODO Какие цвета самые распространенные - для этого посчитать каждый 
-#TODO Какие классы (спектрал) самые распространенные
-#TODO Предыдущие параметры в рамках класса + типа
-#vignette("ggplot2-specs")
-#groupby(['quarter', 'brand'])\
- #     .brand.count().unstack().plot.bar(legend=True)
-
 
 ```
  
@@ -350,6 +343,11 @@ plot_grid(p_magn_sclassO, p_magn_sclassB, p_magn_sclassA, p_magn_sclassF, p_magn
 ```
   
   
+  All class-G graphs seem to be a bit off but the reason for it is that just one star been assigned that class.
+  
+## Summary on distribution graphs
+
+  Among more than 50 graphs above we can observe all kinds of distributions: distinct positive skewed ones (like stype2_luminosity and stype3_luminosity); negative skewed (like sclassM_magnitute_absolute); and almost bell-shaped (aka normal) distribution on graph stype5_radius.
   
   
   
