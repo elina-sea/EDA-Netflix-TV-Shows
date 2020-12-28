@@ -342,7 +342,6 @@ plot_grid(p_lum_sclassO, p_lum_sclassB, p_lum_sclassA, p_lum_sclassF, p_lum_scla
 plot_grid(p_rad_sclassO, p_rad_sclassB, p_rad_sclassA, p_rad_sclassF, p_rad_sclassG, p_rad_sclassK, p_rad_sclassM)
 plot_grid(p_magn_sclassO, p_magn_sclassB, p_magn_sclassA, p_magn_sclassF, p_magn_sclassG, p_magn_sclassK, p_magn_sclassM)
 
-#TODO group by class/type - not parameters
 ```
   
   
@@ -460,6 +459,11 @@ var(stars_magnitute_absolute)
 ```    
   
   
+```{r}
+
+#TODO group by class/type - not parameters (part1)
+#TODO male conclusions from part 2 (mean, mode, etc)
+```
   
   
   
