@@ -347,6 +347,26 @@ plot_grid(p_magn_sclassO, p_magn_sclassB, p_magn_sclassA, p_magn_sclassF, p_magn
   
   All class-G graphs seem to be a bit off but the reason for it is that just one star been assigned that class.
   
+  Now doubt, there are lots of graphs to compare already. And for example we can say that:
+    - Hypergiants have the greates radius among other types. The smallest smallest radius values are recorded among Red Dwarfs;
+    - Temperature range of Brown Dwarfs seems to be in the lowest values, so we can say those stars are the coldest ones among others;
+    - Supergiants and Hypergiants are the brightest stars;
+    - The lowest absolute magnitute of population can be met among Hypergiants and the highest among Brown Dwarfs.
+
+  But even with this amount of graphs it's quite hard to distinguish one type from another. So let's group them all differently to compile a 'profile' of each class.
+  
+```{r}
+plot_grid(p_temp_stype0, p_lum_stype0, p_rad_stype0, p_magn_stype0)
+plot_grid(p_temp_stype1, p_lum_stype1, p_rad_stype1, p_magn_stype1)
+plot_grid(p_temp_stype2, p_lum_stype2, p_rad_stype2, p_magn_stype2)
+plot_grid(p_temp_stype3, p_lum_stype3, p_rad_stype3, p_magn_stype3)
+plot_grid(p_temp_stype4, p_lum_stype4, p_rad_stype4, p_magn_stype4)
+plot_grid(p_temp_stype5, p_lum_stype5, p_rad_stype5, p_magn_stype5)
+```
+
+
+  Now we can make some exploration on how this values are interconnected and whar are the depenedniec within each type and in general. But we will look into it a bit later.
+  
 ## Summary on distribution graphs
 
   Among more than 50 graphs above we can observe all kinds of distributions: distinct positive skewed ones (like stype2_luminosity and stype3_luminosity); negative skewed (like sclassM_magnitute_absolute); and almost bell-shaped or normal distribution on graph stype5_radius. Also there's a few of miltimodal distributions, such as sclassM_magnitute_absolute.
