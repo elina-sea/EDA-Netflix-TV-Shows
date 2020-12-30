@@ -6,16 +6,8 @@ output:
 editor_options: 
   chunk_output_type: inline
 ---
-
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+#### comment
+  Written with some trivial explanations and conclusions in order go through the process of explaining everything to myself for remembering objects better.
 
 ---
 # Part 1
@@ -338,7 +330,7 @@ p_magn_sclassM <- ggplot(df_scalssM, aes(sclassM_magnitute_absolute)) + geom_his
 
 #PLOT
 plot_grid(p_temp_sclassO, p_temp_sclassB, p_temp_sclassA, p_temp_sclassF, p_temp_sclassG, p_temp_sclassK, p_temp_sclassM)
-plot_grid(p_lum_sclassO, p_lum_sclassB, p_lum_sclassA, p_lum_sclassF, p_lum_sclassG, p_lum_sclassK, p_lum_sclassM)
+plot_grid(p_lum_sclassO, p_lum_sclassB, p_lum_sclassA, p_lum_sclassF, p_lum_sclassG, p_lum_sclassK, p_lum_sclassM) 
 plot_grid(p_rad_sclassO, p_rad_sclassB, p_rad_sclassA, p_rad_sclassF, p_rad_sclassG, p_rad_sclassK, p_rad_sclassM)
 plot_grid(p_magn_sclassO, p_magn_sclassB, p_magn_sclassA, p_magn_sclassF, p_magn_sclassG, p_magn_sclassK, p_magn_sclassM)
 
@@ -429,6 +421,19 @@ library(DescTools)
 Mode(stars_magnitute_absolute)
 ```
 
+
+  Let's discuss mode a bit. As we can see, the result went a bit off for radius mode. But actually it's not off but rather demonstrates some of the "disadvantages" of mode:
+    - mode is unstable when the data consist of a small number of values;
+    - data can have more than one mode or no mode at all;
+  Though it is often considered to be a disadvantage I'd say that it's just another way to make some conclusion upon given data. If we have several values which are met with the same frequency we can conclude that distribution graph is meant to have several peaks. In other words by computing mode of radius we can already say that the distribution graph of this value is meant to be multimodal. And if we go back to our radius graph we will see that it's indeed multimodal.
+  
+  
+```{r}
+ggplot(df_stars, aes(stars_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+```
+  
+  
+
 ### Median values
 #### Median of temperature
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
@@ -458,31 +463,57 @@ Range(stars_temperature)
 IQR(stars_temperature)
 var(stars_temperature)
 ```
+
+  From the computations above we can say:
+    - temperature of each star in the set lays in a range between 1939 and 40000 Kelvins
+    - range between Q1 and Q3 equals 11711.25 which is approximately 1/3 of the whole range of values; 
+    - variance or average squared difference of the scores from the mean equals 91248824
+
+
 #### Luminosity
 ```{r}
 Range(stars_luminosity)
 IQR(stars_luminosity)
 var(stars_luminosity)
 ```
+
+  From the computations above we can say:
+    - luminosity of each star in the set lays in a range between 0.8 and 849420 lumens
+    - range between Q1 and Q equals 198050
+    - variance or average squared difference of the scores from the mean equals 32195930524 - it is a very big value which indicates that numbers in set are far from mean and far from each other **or** it might also state that there are some outlining values which add great weight to this number. 
+    So let's `trim` luminosity and try again. By the way, we could have trimmed luminosity, temperature and radius sets in the very beginning as good practice, because those distributions have extrimely skewed graphs.
+    
+```{r}
+library(DescTools)
+trim <- Trim(stars_luminosity, trim = 0.1)
+var(trim)
+```
+    We removed 10% of lowest and greatest values and result is still a very large value what proves that deviations from mean are quite big for this parameter. 
+
 #### Radius
 ```{r}
 Range(stars_radius)
 IQR(stars_radius)
 var(stars_radius)
 ```  
+ 
+  From the computations above we can say:
+    - radius of each star in the set lays in a range between 0.0084 and 1948.5 
+    - range between Q1 and Q equals 198050
+    - variance or average squared difference of the scores from the mean equals 32195930524 - it is a very big value which indicates that numbers in set are far from mean and far from each other **or** it might also state that there are some outlining values which add great weight to this number. 
+
+
 #### Absolute magnitute
 ```{r}
 Range(stars_magnitute_absolute)
 IQR(stars_magnitute_absolute)
-print(IQR(stars_magnitute_absolute) / 1.349)
 var(stars_magnitute_absolute)
 ```    
   
   
 ```{r}
 
-#TODO group by class/type - not parameters (part1)
-#TODO male conclusions from part 2 (mean, mode, etc)
+#TODO make conclusions from part 2 (mean, mode, etc)
 ```
   
   
