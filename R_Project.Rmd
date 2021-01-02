@@ -1,5 +1,5 @@
 ---
-title: "EDA on 240 Stars Among 5 Star Types"
+title: "SECOND HAND CARS DATA SET"
 output:
   html_document:
     df_print: paged
@@ -12,15 +12,24 @@ editor_options:
 ---
 # Part 1
 
-  This is an R Notebook containing the analysis of different parameters of set of 240 stars. Data set was obtained from [Kaggle](https://www.kaggle.com/deepu1109/star-dataset).
-  Stars are divided into the following 6 classes:
-
-  - Brown Dwarf -> Star Type = 0
-  - Red Dwarf -> Star Type = 1
-  - White Dwarf-> Star Type = 2
-  - Main Sequence -> Star Type = 3
-  - Supergiant -> Star Type = 4
-  - Hypergiant -> Star Type = 5
+  This is an R Notebook containing the analysis of 1000 cars on second-hand market. Data set was obtained from [Kaggle]https://www.kaggle.com/mayankpatel14/second-hand-used-cars-data-set-linear-regression).
+  
+  Description from author:
+  This is a dataset that can be used to apply regression algorithms for beginners. There are no missing value and the data set is small too.
+  The data set gives the second hand price of cars and its features like:
+  
+- v.id
+- on road old
+- on road now
+- years
+- km
+- rating
+- condition
+- economy
+- top speed
+- hp
+- torque
+- current price
   
   Let's start with observing what types of variables there are in this data set:
 
@@ -28,10 +37,10 @@ editor_options:
 library(readr)
 library(ggplot2)
 #read in the dataset
-stars <- read_csv("Stars.csv")
+cars <- read_csv("cars.csv")
 ```
 
-  As we can observe this data set has majorly quantitative variables: `temperature measured in Kelvins, luminosity (with respect to Sun), radius (with respect to Sun), absolute visual magnitude, star type` and minorly of qualitative variables: `star color, spectral class`.
+  As we can observe this data set has only quantitative variables and they all are represented by numeric values of type double.
   
 #### Reasoning for using this data set
   Some of the tasks to be performed and aspects to be explored:
@@ -39,15 +48,12 @@ stars <- read_csv("Stars.csv")
 ### Analysing missing values 
 
 ```{r message=FALSE, paged.print=FALSE, echo=FALSE}
-library(VIM)
 library(naniar)
 #plot missing values with naniar pkg which is based on ggplot2
-gg_miss_var(stars)
-#plot proportions of missing values and their combos with vim aggr 
-summary(aggr(stars))
+gg_miss_var(cars)
 ```
 
-  As we can see, there are no missing values in this data set. Which means we can assume that all relations will be reliable.
+  As we can see, there are no missing values in this data set. This means we can compute further relations without complications.
   
 ## Now let's have fun and explore distribution of each parameter individually
 
@@ -56,412 +62,237 @@ summary(aggr(stars))
   
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(cowplot)
+library(dplyr)
+library(hrbrthemes)
 
-stars_temperature <- c(stars$`Temperature (K)`)
-stars_luminosity <- c(stars$`Luminosity(L/Lo)`)
-stars_radius <- c(stars$`Radius(R/Ro)`)
-stars_magnitute_absolute <- c(stars$`Absolute magnitude(Mv)`)
-stars_type <- c(stars$`Star type`)
+km <- c(cars$km)
+years <- c(cars$years)
+rating <- c(cars$rating)
+`condition rating` <- c(cars$condition)
+discount <- c(cars$economy)
+mph <- c(cars$`top speed`)
+hp <- c(cars$hp)
+torque <- c(cars$torque)
+price <- c(cars$`current price`)
 
-df_stars <- data.frame(stars)
+df_cars <- data.frame(cars)
 
-p_temp <- ggplot(df_stars, aes(stars_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum <- ggplot(df_stars, aes(stars_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad <- ggplot(df_stars, aes(stars_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn <- ggplot(df_stars, aes(stars_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-plot_grid(p_temp, p_lum, p_rad, p_magn)
+ggplot(df_cars, aes(km)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car mileage") +
+  theme_ipsum()
+ggplot(df_cars, aes(years)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car age") +
+  theme_ipsum()
+ggplot(df_cars, aes(rating)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car rating from 1 to 5") +
+  theme_ipsum()
+ggplot(df_cars, aes(`condition rating`)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car condition rating from 1 to 10") +
+  theme_ipsum()
+ggplot(df_cars, aes(discount)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of sale for car in %") +
+  theme_ipsum()
+ggplot(df_cars, aes(mph)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car maximum speed in miles/hour") +
+  theme_ipsum()
+ggplot(df_cars, aes(torque)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car torque") +
+  theme_ipsum()
+ggplot(df_cars, aes(price)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car price") +
+  theme_ipsum()
 
 
 ```
- 
- 
-  But let's remember that there are 6 types of stars in the dataset. Let's see how all 240 stars are distributed among those types.
+
+### Summary on distribution graphs
+
+  From the distributions graphs above we can conclude:
+  - there is approximately even ratio between amount of cars for each rating and "age" of a car
+  - most of the cars have middle price rather than low or high
   
+  Speaking of graphs themselves, there are no skewed graphs - rather multimodal. Car price distribution looks close to normal bell-shaped distribution.
   
-  
-```{r message=FALSE, warning=FALSE, echo=FALSE}
-
-star_type <- c(stars$`Star type`)
-p_type <- ggplot(df_stars, aes(star_type)) + geom_histogram(aes(y = ..density..)) + geom_density()
-show(p_type)
-
-```
- 
- 
-  From the plot above we can conclude that there's an even amount of each star type presented in data set. But does it mean that all of the distributions we explored earlier (temperature, luminosity, radius, magnitude) will remain the same in terms of every type individually?
-Let's find out.
-
-```{r message=FALSE, warning=FALSE, echo=FALSE}
-#TYPE O
-stype0 <- stars[stars$`Star type`=="0",]
-
-df_stype0 <- data.frame(stype0, stringsAsFactors=FALSE)
-
-stype0_temperature <- c(stype0$`Temperature (K)`)
-stype0_luminosity <- c(stype0$`Luminosity(L/Lo)`)
-stype0_radius <- c(stype0$`Radius(R/Ro)`)
-stype0_magnitute_absolute <- c(stype0$`Absolute magnitude(Mv)`)
-
-p_temp_stype0 <- ggplot(df_stype0, aes(stype0_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_stype0 <- ggplot(df_stype0, aes(stype0_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_stype0 <- ggplot(df_stype0, aes(stype0_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_stype0 <- ggplot(df_stype0, aes(stype0_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-
-#TYPE 1
-stype1 <- stars[stars$`Star type`=="1",]
-
-df_stype1 <- data.frame(stype1)
-
-stype1_temperature <- c(stype1$`Temperature (K)`)
-stype1_luminosity <- c(stype1$`Luminosity(L/Lo)`)
-stype1_radius <- c(stype1$`Radius(R/Ro)`)
-stype1_magnitute_absolute <- c(stype1$`Absolute magnitude(Mv)`)
-
-p_temp_stype1 <- ggplot(df_stype1, aes(stype1_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_stype1 <- ggplot(df_stype1, aes(stype1_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_stype1 <- ggplot(df_stype1, aes(stype1_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_stype1 <- ggplot(df_stype1, aes(stype1_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-
-#TYPE 2
-stype2 <- stars[stars$`Star type`=="2",]
-
-df_stype2 <- data.frame(stype2)
-
-stype2_temperature <- c(stype2$`Temperature (K)`)
-stype2_luminosity <- c(stype2$`Luminosity(L/Lo)`)
-stype2_radius <- c(stype2$`Radius(R/Ro)`)
-stype2_magnitute_absolute <- c(stype2$`Absolute magnitude(Mv)`)
-
-p_temp_stype2 <- ggplot(df_stype2, aes(stype2_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_stype2 <- ggplot(df_stype2, aes(stype2_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_stype2 <- ggplot(df_stype2, aes(stype2_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_stype2 <- ggplot(df_stype2, aes(stype2_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-
-#TYPE 3
-stype3 <- stars[stars$`Star type`=="3",]
-
-df_stype3 <- data.frame(stype3)
-
-stype3_temperature <- c(stype3$`Temperature (K)`)
-stype3_luminosity <- c(stype3$`Luminosity(L/Lo)`)
-stype3_radius <- c(stype3$`Radius(R/Ro)`)
-stype3_magnitute_absolute <- c(stype3$`Absolute magnitude(Mv)`)
-
-p_temp_stype3 <- ggplot(df_stype3, aes(stype3_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_stype3 <- ggplot(df_stype3, aes(stype3_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_stype3 <- ggplot(df_stype3, aes(stype3_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_stype3 <- ggplot(df_stype3, aes(stype3_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-
-#TYPE 4
-stype4 <- stars[stars$`Star type`=="4",]
-
-df_stype4 <- data.frame(stype4)
-
-stype4_temperature <- c(stype4$`Temperature (K)`)
-stype4_luminosity <- c(stype4$`Luminosity(L/Lo)`)
-stype4_radius <- c(stype4$`Radius(R/Ro)`)
-stype4_magnitute_absolute <- c(stype4$`Absolute magnitude(Mv)`)
-
-p_temp_stype4 <- ggplot(df_stype4, aes(stype4_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_stype4 <- ggplot(df_stype4, aes(stype4_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_stype4 <- ggplot(df_stype4, aes(stype4_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_stype4 <- ggplot(df_stype4, aes(stype4_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-
-#TYPE 5
-stype5 <- stars[stars$`Star type`=="5",]
-
-df_stype5 <- data.frame(stype5)
-
-stype5_temperature <- c(stype5$`Temperature (K)`)
-stype5_luminosity <- c(stype5$`Luminosity(L/Lo)`)
-stype5_radius <- c(stype5$`Radius(R/Ro)`)
-stype5_magnitute_absolute <- c(stype5$`Absolute magnitude(Mv)`)
-
-p_temp_stype5 <- ggplot(df_stype5, aes(stype5_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_stype5 <- ggplot(df_stype5, aes(stype5_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_stype5 <- ggplot(df_stype5, aes(stype5_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_stype5 <- ggplot(df_stype5, aes(stype5_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-
-plot_grid(p_temp_stype0, p_temp_stype1, p_temp_stype2, p_temp_stype3, p_temp_stype4, p_temp_stype5)
-plot_grid(p_lum_stype0, p_lum_stype1, p_lum_stype2, p_lum_stype3, p_lum_stype4, p_lum_stype5)
-plot_grid(p_rad_stype0, p_rad_stype1, p_rad_stype2, p_rad_stype3, p_rad_stype4, p_rad_stype5)
-plot_grid(p_magn_stype0, p_magn_stype1, p_magn_stype2, p_magn_stype3, p_magn_stype4, p_magn_stype5)
-
-```
-
-
-  But let's not forget that we also have stars divided according to their spectral class - not only types. 
-  How many stars are represented in each spectral class? Let's see:
-
-
-```{r message=FALSE, warning=FALSE, echo=FALSE}
-library(ggplot2)
-
-sclassO <- stars[stars$`Spectral Class` == "O",]
-sclassB <- stars[stars$`Spectral Class` == "B",]
-sclassA <- stars[stars$`Spectral Class` == "A",]
-sclassF <- stars[stars$`Spectral Class` == "F",]
-sclassG <- stars[stars$`Spectral Class` == "G",]
-sclassK <- stars[stars$`Spectral Class` == "K",]
-sclassM <- stars[stars$`Spectral Class` == "M",]
-
-sclassO_value <- nrow(sclassO)
-sclassB_value <- nrow(sclassB)
-sclassA_value <- nrow(sclassA)
-sclassF_value <- nrow(sclassF)
-sclassG_value <- nrow(sclassG)
-sclassK_value <- nrow(sclassK)
-sclassM_value <- nrow(sclassM) 
-
-all_classes <- c(sclassO_value, sclassB_value, sclassA_value, sclassF_value, sclassG_value, sclassK_value, sclassM_value)
-
-show(all_classes)
-
-```
-```
-Class
-        O   B   A   F   G   K   M
-  
-```
-  
-  Let's also observe how previously examined parameters are distributed in terms of each class:
-  
-```{r message=FALSE, warning=FALSE, echo=FALSE}
-library(cowplot)
-library(ggplot2)
-
-#CLASS O
-df_scalssO <- data.frame(sclassO)
-
-sclassO_temperature <- c(sclassO$`Temperature (K)`)
-sclassO_luminosity <- c(sclassO$`Luminosity(L/Lo)`)
-sclassO_radius <- c(sclassO$`Radius(R/Ro)`)
-sclassO_magnitute_absolute <- c(sclassO$`Absolute magnitude(Mv)`)
-
-p_temp_sclassO <- ggplot(df_scalssO, aes(sclassO_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassO <- ggplot(df_scalssO, aes(sclassO_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassO <- ggplot(df_scalssO, aes(sclassO_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassO <- ggplot(df_scalssO, aes(sclassO_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#CLASS B
-df_scalssB <- data.frame(sclassB)
-
-sclassB_temperature <- c(sclassB$`Temperature (K)`)
-sclassB_luminosity <- c(sclassB$`Luminosity(L/Lo)`)
-sclassB_radius <- c(sclassB$`Radius(R/Ro)`)
-sclassB_magnitute_absolute <- c(sclassB$`Absolute magnitude(Mv)`)
-
-p_temp_sclassB <- ggplot(df_scalssB, aes(sclassB_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassB <- ggplot(df_scalssB, aes(sclassB_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassB <- ggplot(df_scalssB, aes(sclassB_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassB <- ggplot(df_scalssB, aes(sclassB_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#CLASS A
-df_scalssA <- data.frame(sclassA)
-
-sclassA_temperature <- c(sclassA$`Temperature (K)`)
-sclassA_luminosity <- c(sclassA$`Luminosity(L/Lo)`)
-sclassA_radius <- c(sclassA$`Radius(R/Ro)`)
-sclassA_magnitute_absolute <- c(sclassA$`Absolute magnitude(Mv)`)
-
-p_temp_sclassA <- ggplot(df_scalssA, aes(sclassA_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassA <- ggplot(df_scalssA, aes(sclassA_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassA <- ggplot(df_scalssA, aes(sclassA_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassA <- ggplot(df_scalssA, aes(sclassA_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#CLASS F
-df_scalssF <- data.frame(sclassF)
-
-sclassF_temperature <- c(sclassF$`Temperature (K)`)
-sclassF_luminosity <- c(sclassF$`Luminosity(L/Lo)`)
-sclassF_radius <- c(sclassF$`Radius(R/Ro)`)
-sclassF_magnitute_absolute <- c(sclassF$`Absolute magnitude(Mv)`)
-
-p_temp_sclassF <- ggplot(df_scalssF, aes(sclassF_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassF <- ggplot(df_scalssF, aes(sclassF_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassF <- ggplot(df_scalssF, aes(sclassF_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassF <- ggplot(df_scalssF, aes(sclassF_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#CLASS G
-df_scalssG <- data.frame(sclassG)
-
-sclassG_temperature <- c(sclassG$`Temperature (K)`)
-sclassG_luminosity <- c(sclassG$`Luminosity(L/Lo)`)
-sclassG_radius <- c(sclassG$`Radius(R/Ro)`)
-sclassG_magnitute_absolute <- c(sclassG$`Absolute magnitude(Mv)`)
-
-p_temp_sclassG <- ggplot(df_scalssG, aes(sclassG_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassG <- ggplot(df_scalssG, aes(sclassG_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassG <- ggplot(df_scalssG, aes(sclassG_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassG <- ggplot(df_scalssG, aes(sclassG_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#CLASS K
-df_scalssK <- data.frame(sclassK)
-
-sclassK_temperature <- c(sclassK$`Temperature (K)`)
-sclassK_luminosity <- c(sclassK$`Luminosity(L/Lo)`)
-sclassK_radius <- c(sclassK$`Radius(R/Ro)`)
-sclassK_magnitute_absolute <- c(sclassK$`Absolute magnitude(Mv)`)
-
-p_temp_sclassK <- ggplot(df_scalssK, aes(sclassK_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassK <- ggplot(df_scalssK, aes(sclassK_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassK <- ggplot(df_scalssK, aes(sclassK_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassK <- ggplot(df_scalssK, aes(sclassK_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#CLASS M
-df_scalssM <- data.frame(sclassM)
-
-sclassM_temperature <- c(sclassM$`Temperature (K)`)
-sclassM_luminosity <- c(sclassM$`Luminosity(L/Lo)`)
-sclassM_radius <- c(sclassM$`Radius(R/Ro)`)
-sclassM_magnitute_absolute <- c(sclassM$`Absolute magnitude(Mv)`)
-
-p_temp_sclassM <- ggplot(df_scalssM, aes(sclassM_temperature)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_lum_sclassM <- ggplot(df_scalssM, aes(sclassM_luminosity)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_rad_sclassM <- ggplot(df_scalssM, aes(sclassM_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
-p_magn_sclassM <- ggplot(df_scalssM, aes(sclassM_magnitute_absolute)) + geom_histogram(aes(y = ..density..)) + geom_density()
-
-#PLOT
-plot_grid(p_temp_sclassO, p_temp_sclassB, p_temp_sclassA, p_temp_sclassF, p_temp_sclassG, p_temp_sclassK, p_temp_sclassM)
-plot_grid(p_lum_sclassO, p_lum_sclassB, p_lum_sclassA, p_lum_sclassF, p_lum_sclassG, p_lum_sclassK, p_lum_sclassM) 
-plot_grid(p_rad_sclassO, p_rad_sclassB, p_rad_sclassA, p_rad_sclassF, p_rad_sclassG, p_rad_sclassK, p_rad_sclassM)
-plot_grid(p_magn_sclassO, p_magn_sclassB, p_magn_sclassA, p_magn_sclassF, p_magn_sclassG, p_magn_sclassK, p_magn_sclassM)
-
-```
-  
-  
-  All class-G graphs seem to be a bit off but the reason for it is that just one star been assigned that class.
-  
-  Now doubt, there are lots of graphs to compare already. And for example we can say that:
-    - Hypergiants have the greates radius among other types. The smallest smallest radius values are recorded among Red Dwarfs;
-    - Temperature range of Brown Dwarfs seems to be in the lowest values, so we can say those stars are the coldest ones among others;
-    - Supergiants and Hypergiants are the brightest stars;
-    - The lowest absolute magnitute of population can be met among Hypergiants and the highest among Brown Dwarfs.
-
-  But even with this amount of graphs it's quite hard to distinguish one type from another. So let's group them all differently to compile a 'profile' of each class.
-  
-```{r}
-plot_grid(p_temp_stype0, p_lum_stype0, p_rad_stype0, p_magn_stype0)
-plot_grid(p_temp_stype1, p_lum_stype1, p_rad_stype1, p_magn_stype1)
-plot_grid(p_temp_stype2, p_lum_stype2, p_rad_stype2, p_magn_stype2)
-plot_grid(p_temp_stype3, p_lum_stype3, p_rad_stype3, p_magn_stype3)
-plot_grid(p_temp_stype4, p_lum_stype4, p_rad_stype4, p_magn_stype4)
-plot_grid(p_temp_stype5, p_lum_stype5, p_rad_stype5, p_magn_stype5)
-```
-
-
-  Now we can make some exploration on how this values are interconnected and whar are the depenedniec within each type and in general. But we will look into it a bit later.
-  
-## Summary on distribution graphs
-
-  Among more than 50 graphs above we can observe all kinds of distributions: distinct positive skewed ones (like stype2_luminosity and stype3_luminosity); negative skewed (like sclassM_magnitute_absolute); and almost bell-shaped or normal distribution on graph stype5_radius. Also there's a few of miltimodal distributions, such as sclassM_magnitute_absolute.
-  
-  
-  
+---  
 # Part 2
   
-  In this part we will concentrate on calculating mean of each parameter overall and regardless class/type of stars.
+  In this part we will concentrate on examining each parameter separately.
   
 ### Mean values
-#### Mean of temperature
+#### Mean of mileage
 ```{r  message=FALSE, warning=FALSE, echo=FALSE}
 library(ggplot2)
 
-mean(stars_temperature)
+mean(km)
 ```
-#### Mean of luminosity
+#### Mean of car age
 ```{r  message=FALSE, warning=FALSE, echo=FALSE}
 library(ggplot2)
 
-mean(stars_luminosity)
+mean(years)
 ```
-#### Mean of radius
+#### Mean of rating
 ```{r  message=FALSE, warning=FALSE, echo=FALSE}
 library(ggplot2)
 
-mean(stars_radius)
+mean(rating)
 ```
-#### Mean of absolute magnitute
+#### Mean of condition rating
 ```{r  message=FALSE, warning=FALSE, echo=FALSE}
 library(ggplot2)
 
-mean(stars_magnitute_absolute)
+mean(`condition rating`)
 ```
+#### Mean of given discount
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+
+mean(discount)
+```
+#### Mean of maximum speed
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+
+mean(mph)
+```
+#### Mean of torque
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+
+mean(torque)
+```
+#### Mean of price
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+library(ggplot2)
+
+mean(price)
+```
+
+---
+
 
 ### Mode values
-#### Mode of temperature
+#### Mode of mileage
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(DescTools)
 
-Mode(stars_temperature)
+Mode(km)
 ```
-#### Mode of luminosity
+#### Mode of car age
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(DescTools)
 
-Mode(stars_luminosity)
+Mode(years)
 ```
-#### Mode of radius
+#### Mode of rating
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(DescTools)
 
-Mode(stars_radius)
+Mode(rating)
 ```
-#### Mode of absolute magnitute
+#### Mode of condition rating
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(DescTools)
 
-Mode(stars_magnitute_absolute)
+Mode(`condition rating`)
+```
+#### Mode of discount given
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(DescTools)
+
+Mode(discount)
+```
+#### Mode of maximum speed
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(DescTools)
+
+Mode(mph)
+```
+#### Mode of maximum torque
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(DescTools)
+
+Mode(torque)
+```
+#### Mode of maximum price
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(DescTools)
+
+Mode(price)
 ```
 
 
-  Let's discuss mode a bit. As we can see, the result went a bit off for radius mode. But actually it's not off but rather demonstrates some of the "disadvantages" of mode:
+  Let's discuss mode a bit. As we can see, the result went a bit off for mileage mode. But actually it's not off but rather demonstrates some of the "disadvantages" of mode:
     - mode is unstable when the data consist of a small number of values;
     - data can have more than one mode or no mode at all;
-  Though it is often considered to be a disadvantage I'd say that it's just another way to make some conclusion upon given data. If we have several values which are met with the same frequency we can conclude that distribution graph is meant to have several peaks. In other words by computing mode of radius we can already say that the distribution graph of this value is meant to be multimodal. And if we go back to our radius graph we will see that it's indeed multimodal.
+  Though it is often considered to be a disadvantage, it's just another way to make some conclusions upon given data. If we have several values which are met with the same frequency we can conclude that distribution graph is meant to have several peaks. In other words by computing mode of mileage we can already say that the distribution graph of this value is meant to be multimodal. And if we go back to our mileage graph we will see that it's indeed multimodal.
   
   
 ```{r}
-ggplot(df_stars, aes(stars_radius)) + geom_histogram(aes(y = ..density..)) + geom_density()
+ggplot(df_cars, aes(km)) + geom_histogram(aes(y = ..density..)) + 
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
+  ggtitle("Distribution of car mileage") +
+  theme_ipsum()
 ```
   
   
 
 ### Median values
-#### Median of temperature
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+#### Median of mileage
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
 
-median(stars_temperature)
+median(km)
 ```
-#### Median of luminosity
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+#### Median of car age
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
 
-median(stars_luminosity)
+median(years)
 ```
-#### Median of radius
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+#### Median of rating
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
 
-median(stars_radius)
-```  
-#### Median of absolute magnitute
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+median(rating)
+```
+#### Median of condition rating
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
 
-median(stars_magnitute_absolute)
-```  
+median(`condition rating`)
+```
+#### Median of given discount
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+
+median(discount)
+```
+#### Median of maximum speed
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+
+median(mph)
+```
+#### Median of torque
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+
+median(torque)
+```
+#### Median of price
+```{r  message=FALSE, warning=FALSE, echo=FALSE}
+
+median(price)
+```
   
 ### Variabilty
-#### Temperature
+#### Mileage
 ```{r}
-Range(stars_temperature)
-IQR(stars_temperature)
-var(stars_temperature)
+Range(km)
+IQR(km)
+var(km)
 ```
 
   From the computations above we can say:
@@ -470,57 +301,108 @@ var(stars_temperature)
     - variance or average squared difference of the scores from the mean equals 91248824
 
 
-#### Luminosity
+#### Car age
 ```{r}
-Range(stars_luminosity)
-IQR(stars_luminosity)
-var(stars_luminosity)
+Range(years)
+IQR(years)
+var(years)
 ```
 
+  [DELETE]  
   From the computations above we can say:
     - luminosity of each star in the set lays in a range between 0.8 and 849420 lumens
     - range between Q1 and Q equals 198050
     - variance or average squared difference of the scores from the mean equals 32195930524 - it is a very big value which indicates that numbers in set are far from mean and far from each other **or** it might also state that there are some outlining values which add great weight to this number. 
-    So let's `trim` luminosity and try again. By the way, we could have trimmed luminosity, temperature and radius sets in the very beginning as good practice, because those distributions have extrimely skewed graphs.
-    
+    So let's `trim` luminosity and try again. By the way, we could have trimmed luminosity, temperature and radius sets in the very beginning as good practice, because those distributions have extremely skewed graphs.
+    [DELETE]  
+  
+  [DELETE]  
 ```{r}
 library(DescTools)
-trim <- Trim(stars_luminosity, trim = 0.1)
-var(trim)
+trim_lum <- Trim(stars_luminosity, trim = 0.30)
+var(trim_lum)
 ```
-    We removed 10% of lowest and greatest values and result is still a very large value what proves that deviations from mean are quite big for this parameter. 
+   We removed 20% of lowest and greatest values and result is still a very large value what proves that deviations from mean are quite big for this parameter. 
+     [DELETE]  
 
-#### Radius
+#### Discount
 ```{r}
-Range(stars_radius)
-IQR(stars_radius)
-var(stars_radius)
+Range(discount)
+IQR(discount)
+var(discount)
 ```  
  
   From the computations above we can say:
     - radius of each star in the set lays in a range between 0.0084 and 1948.5 
-    - range between Q1 and Q equals 198050
-    - variance or average squared difference of the scores from the mean equals 32195930524 - it is a very big value which indicates that numbers in set are far from mean and far from each other **or** it might also state that there are some outlining values which add great weight to this number. 
+    - range between Q1 and Q3 equals 42.64725, compairing it o the main ramge we can conclude that major amount of records are below Q3
+    - variance or average squared difference of the scores from the mean equals 267450.1 - it is a  big value too, but not in terms of this data set
 
 
-#### Absolute magnitute
+#### Maximum speed
 ```{r}
-Range(stars_magnitute_absolute)
-IQR(stars_magnitute_absolute)
-var(stars_magnitute_absolute)
+Range(mph)
+IQR(mph)
+var(mph)
 ```    
+    
+  From the computations above we can say:
+  - absolute magnitude of each star in the set lays in a range between -11.92 and 20.06 watts
+  - range between Q1 and Q3 equals 19.93
+  - variance or average squared difference of the scores from the mean equals 110.9338 - it is a small value comparing to previous one, but if we take range into consideration we can say, that spread of values is quite unbalanced too.
   
+#### Torque
+```{r}
+Range(torque)
+IQR(torque)
+var(torque)
+``` 
+  [CONCLUSIONS]
+
+  [CONCLUSIONS]
+
+#### Price
+```{r}
+Range(price)
+IQR(price)
+var(price)
+```   
+
+  
+---
+# Part 3
+  
+  In this part we will explore some dependencies between known parameters of the stars in our dataset. 
+  Let's choose one parameter which we will target in this part of work. This parameter will be out dependent value, which means we will explore how and how much it is influenced by other parameters. 
+  **Magnitude** is going to be such parameter. It means we will investigate what magnitude consists of.
+
+  
+## Correlations and correlation matrix
+  
+  Purpose of this computation is to find what values might be depended from each other.
   
 ```{r}
+library(dplyr)
 
-#TODO make conclusions from part 2 (mean, mode, etc)
+cars_cor <- cor(cars)
+
+library(corrplot)
+
+corrplot(cars_cor, method ="pie", type="lower")
 ```
   
   
+  As we can see observe from the correlation matrix above, the highest correlation is between magnitude-luminosity pair, we can say that this values are connected and assume (but not be sure) that they have cause-effect relationship. Their correlation coefficient is negative which means that with the growth of one parameter the other one lowers simultaneously. The highest positive correlation we can see in radius-luminosity pair. On the matrix we can see that they tend to grow synchronously. 
+  Let's take those three pairs into further steps and build scatter plots for them..
   
-  
-  
-  
+```{r}
+library(ggplot2)
+library(DescTools)
+
+ggplot(cars, aes(x = km, y = price)) + geom_point()
+
+
+```
+
   
   
   
