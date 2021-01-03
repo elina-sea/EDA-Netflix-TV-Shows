@@ -9,7 +9,7 @@ editor_options:
 #### comment
   Written with some trivial explanations and conclusions in order go through the process of explaining everything to myself for remembering objects better.
 
----
+
 # Part 1
 
   This is an R Notebook containing the analysis of 1000 cars on second-hand market. Data set was obtained from [Kaggle]https://www.kaggle.com/mayankpatel14/second-hand-used-cars-data-set-linear-regression).
@@ -31,6 +31,7 @@ editor_options:
 - torque
 - current price
   
+  
   Let's start with observing what types of variables there are in this data set:
 
 ```{r echo = FALSE}
@@ -42,8 +43,6 @@ cars <- read_csv("cars.csv")
 
   As we can observe this data set has only quantitative variables and they all are represented by numeric values of type double.
   
-#### Reasoning for using this data set
-  Some of the tasks to be performed and aspects to be explored:
   
 ### Analysing missing values 
 
@@ -57,7 +56,7 @@ gg_miss_var(cars)
   
 ## Now let's have fun and explore distribution of each parameter individually
 
-  On the following graphs distribution of each parameter among all star types is shown.
+  On the following graphs distribution of each parameter is shown.
   
   
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
@@ -115,13 +114,14 @@ ggplot(df_cars, aes(price)) + geom_histogram(aes(y = ..density..)) +
 
 ### Summary on distribution graphs
 
-  From the distributions graphs above we can conclude:
-  - there is approximately even ratio between amount of cars for each rating and "age" of a car
-  - most of the cars have middle price rather than low or high
+  From the distribution graphs above we can conclude:
   
-  Speaking of graphs themselves, there are no skewed graphs - rather multimodal. Car price distribution looks close to normal bell-shaped distribution.
+- there is approximately even ratio between amount of cars for each rating and "age" of a car
+- most of the cars have middle price rather than low or high
   
----  
+  Speaking of graphs themselves, there are no skewed graphs - rather multimodal. Car price distribution looks close to normal bell-shaped distribution. Since it is the only one to have normal distribution we can target it later for regression.
+  
+
 # Part 2
   
   In this part we will concentrate on examining each parameter separately.
@@ -176,8 +176,6 @@ library(ggplot2)
 mean(price)
 ```
 
----
-
 
 ### Mode values
 #### Mode of mileage
@@ -231,8 +229,10 @@ Mode(price)
 
 
   Let's discuss mode a bit. As we can see, the result went a bit off for mileage mode. But actually it's not off but rather demonstrates some of the "disadvantages" of mode:
-    - mode is unstable when the data consist of a small number of values;
-    - data can have more than one mode or no mode at all;
+  
+- mode is unstable when the data consist of a small number of values;
+- data can have more than one mode or no mode at all;
+    
   Though it is often considered to be a disadvantage, it's just another way to make some conclusions upon given data. If we have several values which are met with the same frequency we can conclude that distribution graph is meant to have several peaks. In other words by computing mode of mileage we can already say that the distribution graph of this value is meant to be multimodal. And if we go back to our mileage graph we will see that it's indeed multimodal.
   
   
@@ -318,9 +318,6 @@ var(years)
   
   [DELETE]  
 ```{r}
-library(DescTools)
-trim_lum <- Trim(stars_luminosity, trim = 0.30)
-var(trim_lum)
 ```
    We removed 20% of lowest and greatest values and result is still a very large value what proves that deviations from mean are quite big for this parameter. 
      [DELETE]  
@@ -373,38 +370,94 @@ var(price)
   
   In this part we will explore some dependencies between known parameters of the stars in our dataset. 
   Let's choose one parameter which we will target in this part of work. This parameter will be out dependent value, which means we will explore how and how much it is influenced by other parameters. 
-  **Magnitude** is going to be such parameter. It means we will investigate what magnitude consists of.
+  **Current price** is going to be such parameter. It means we will investigate what price of a car in second-hand market depends on.
 
   
 ## Correlations and correlation matrix
   
-  Purpose of this computation is to find what values might be depended from each other.
+  Purpose of this computation is to find what values correlate with price the most.
   
 ```{r}
-library(dplyr)
-
-cars_cor <- cor(cars)
-
 library(corrplot)
 
+cars_cor <- cor(cars)
 corrplot(cars_cor, method ="pie", type="lower")
 ```
   
   
-  As we can see observe from the correlation matrix above, the highest correlation is between magnitude-luminosity pair, we can say that this values are connected and assume (but not be sure) that they have cause-effect relationship. Their correlation coefficient is negative which means that with the growth of one parameter the other one lowers simultaneously. The highest positive correlation we can see in radius-luminosity pair. On the matrix we can see that they tend to grow synchronously. 
-  Let's take those three pairs into further steps and build scatter plots for them..
+  As we can see observe from the correlation matrix above, the highest correlation is between mileage(km)-price pair, we can say that this values are connected and assume that they have cause-effect relationship. Their correlation coefficient is negative which means that with the growth of one parameter the other one lowers simultaneously. There are also several positive correlations (both arguments grow simultaneously). And though condition rating doesn't have very high correlation to price, I think it will be interesting to compute a scatter plot for it just to compare high/low correlation scatter plots.
+  Let's take those three pairs into further steps and build scatter plots for them.
   
 ```{r}
 library(ggplot2)
 library(DescTools)
+library(hrbrthemes)
 
-ggplot(cars, aes(x = km, y = price)) + geom_point()
-
+ggplot(cars, aes(x = km, y = price)) + 
+  geom_point() +
+  ggtitle("Scatter plot: price vs mileage") +
+  theme_ipsum()
+ggplot(cars, aes(x = `condition rating`, y = price)) +
+  geom_point() +
+  ggtitle("Scatter plot: price vs condition rating") +
+  theme_ipsum()
 
 ```
 
+  As for price-mileage plot, we can clearly see that values correlate - graph has quite narrow span and there are no outliers. As for the price-condition rating - graph might look a bit off, but the reason is that rating consists of just natural numbers from 1 to 10 - so each step for growth is 1.0. But we still can see a tendency for those vertical lines to go up as they move towards 10.0, so there's a weak correlation.
+  
+## Regression
+
+  Let's take price-mileage pair for further work.
+  
+```{r}
+
+lm_model <- lm(price~km)
+lm_model
+summary(lm_model)
+
+plot(price~km, ylim=c(0, 650000)) + 
+  abline(lm_model,col="red", lwd=3) +
+  title("Scatter plot: price vs mileage") +
+  theme_ipsum()
+
+```
   
   
+  It's not a surprise that plot line proofs tendency and follows scatter plot, so let's devote more time to summary. 
+  
+#### Residuals
+   From the first glance median is a large value and isn't close to 0 which states that positive residual is greater than negative (Min/Max), but considering we deal with prices like 300 000 it's not a big fluctuation. Lets see a graph of residuals to proof that:
+  
+  
+```{r}
+boxplot(lm_model[['residuals']], main='Boxplot: Residuals', ylab='residual value')
+```
+  
+  As mentioned above, this boxplot proofs indeed that on the given scale fluctuation of median isn't critical and it's quite close to zero. Plus, upper and lower bounds are quite symmetrical too. This states that prediction can be considered as a trustworthy.
+  
+#### Coefficients
+  **Estimates** tells us that when mileage tends to zero, price tends to the value of 700 000.
+  **Standard interval** gives us the confidence interval. From the code below we can say with 97% accuracy that with mileage -3.953173 car price will be 724290.555115, but since negative mileage isn't possible - we go back to what was said in ***estimates*** part.
+
+```{r}
+confint(lm_model)
+```
+  
+  [**t value**](https://en.wikipedia.org/wiki/T-statistic) tells us about how far our estimated parameter is from a hypothesized 0 value, scaled by the standard deviation of the estimate.
+  **Pr(>|t|) ** is the [p-value](https://en.wikipedia.org/wiki/P-value) for the individual coefficient.
+
+#### Residual standard error
+  gives an idea of how large the prediction error is in the given sample. [More about degrees of freedom and how to read them.](https://www.investopedia.com/terms/d/degrees-of-freedom.asp)
+  
+#### Multiple R-squared
+  or the Coefficient of Determination - coefficient showing how sure we can be about our predictions. 0.87 is a very high value which gives us the right to say predictions will be made with almost 90% accuracy.
+  
+### Summary
+
+  With given data we can compute regression and predict price for cars on second-hand market. And with accuracy of 87% we can say that a car with almost zero mileage (or new car) would cost around 700k.
+  
+# Part 4
   
   
   
