@@ -295,12 +295,6 @@ IQR(km)
 var(km)
 ```
 
-  From the computations above we can say:
-    - temperature of each star in the set lays in a range between 1939 and 40000 Kelvins
-    - range between Q1 and Q3 equals 11711.25 which is approximately 1/3 of the whole range of values; 
-    - variance or average squared difference of the scores from the mean equals 91248824
-
-
 #### Car age
 ```{r}
 Range(years)
@@ -330,9 +324,10 @@ var(discount)
 ```  
  
   From the computations above we can say:
-    - radius of each star in the set lays in a range between 0.0084 and 1948.5 
-    - range between Q1 and Q3 equals 42.64725, compairing it o the main ramge we can conclude that major amount of records are below Q3
-    - variance or average squared difference of the scores from the mean equals 267450.1 - it is a  big value too, but not in terms of this data set
+  
+- radius of each star in the set lays in a range between 0.0084 and 1948.5 
+- range between Q1 and Q3 equals 42.64725, compairing it o the main ramge we can conclude that major amount of records are below Q3
+- variance or average squared difference of the scores from the mean equals 267450.1 - it is a  big value too, but not in terms of this data set
 
 
 #### Maximum speed
@@ -341,11 +336,6 @@ Range(mph)
 IQR(mph)
 var(mph)
 ```    
-    
-  From the computations above we can say:
-  - absolute magnitude of each star in the set lays in a range between -11.92 and 20.06 watts
-  - range between Q1 and Q3 equals 19.93
-  - variance or average squared difference of the scores from the mean equals 110.9338 - it is a small value comparing to previous one, but if we take range into consideration we can say, that spread of values is quite unbalanced too.
   
 #### Torque
 ```{r}
@@ -457,13 +447,71 @@ confint(lm_model)
 
   With given data we can compute regression and predict price for cars on second-hand market. And with accuracy of 87% we can say that a car with almost zero mileage (or new car) would cost around 700k.
   
-# Part 4
+# Part 4: Lotto Super 7
   
+  Lotto Super 7 was a national lottery game in Canada, operated by the Interprovincial Lottery Corporation. It was launched on June 10, 1994, and its last draw was on September 18, 2009. The lottery had a guaranteed jackpot of $2.5 million, which was carried forward to the next draw if no purchased ticket matched all seven numbers in that draw.
+  To win a prize competitor had to guess a variation of combination of 7 numbers and additional bonus number out of 47 numbers (1-47 range). For every $2 spent, three selections of seven numbers were given. However not all combinations were leading to prize. Only 7 combinations were considered as a match. 
+  They are the following (from greatest to least):
   
+- 7/7
+- 6/7+ (+ states for bonus number)
+- 6/7
+- 5/7
+- 4/7
+- 3/7+
+- 3/7 (free ticket as a prize)
   
+  We will use the following formula: n! / r! (n-r)!
+  Where: 
   
+-  n is amount of numbers to choose from (47 for Lotto Super)
+-  r is amount of numbers we can choose
+
+### Probabilities 
+
+  Let's start from match with the highest probability and move towards least probable match.
+
+#### 3/7 match
+
+  First let's write a function which will help us un calculations:
   
+```{r}
+prob <- function(n, r) {
+  res <- factorial(n) / (factorial(r) * factorial(n - r))
+  return(res)
+}
+prob(n = 47, r = 3) / 3
+```
+
+  The probability of guessing the 3/7 match is `1 in 5405` 
+  Note: we are dividing result by 3, because entering lottery once we can but 3 sets of numbers. So, the initial probability to guess 3/7 (or three of 47) is `1 in 16215`, but since we have 3 sets it becomes `3 in 16215` or `1 in 5405`. This logic will be followed in further calculations too. For cases when there's a bonus number we assume bonus number also gets to be chosen 3 times (1 for each set of 7 numbers).
+ **Example for bonus ticket match:**
   
+#### 3/7+
+```{r}
+prob(n = 47, r = 3) * prob(n = 47, r = 1) / 3
+```
+```{r message=FALSE, warning=FALSE, include=FALSE}
+prob(n = 47, r = 4) / 3
+prob(n = 47, r = 5) / 3
+prob(n = 47, r = 6) / 3
+prob(n = 47, r = 6) * prob(n = 47, r = 1) / 3
+prob(n = 47, r = 7) / 3
+```
+
   
+### Summary 
+
+  After completing calculations we got the following results:
   
+- 7/7 match - 1 : 20963833
+- 6/7+ match - 1 : 168221977
+- 6/7 match - 1 : 3579191
+- 5/7 match - 1 : 511313
+- 4/7 match - 1 : 59455
+- 3/7+ match - 1 : 254035
+- 3/7 match - 1 : 5405
+
+  All results can be checked [here](https://www.lotterycritic.com/lottery-calculators/lottery-odds-calculator/#odds).
   
+
