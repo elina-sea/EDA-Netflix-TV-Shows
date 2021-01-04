@@ -8,30 +8,33 @@ editor_options:
 ---
 #### comment
   Written with some trivial explanations and conclusions in order go through the process of explaining everything to myself for remembering objects better.
+#### end of comment
 
-
-# Part 1
-
-  This is an R Notebook containing the analysis of 1000 cars on second-hand market. Data set was obtained from [Kaggle]https://www.kaggle.com/mayankpatel14/second-hand-used-cars-data-set-linear-regression).
+  This is an R Notebook containing the analysis of 1000 cars on second-hand market. Data set was obtained from [Kaggle](https://www.kaggle.com/mayankpatel14/second-hand-used-cars-data-set-linear-regression). 
   
   Description from author:
   This is a dataset that can be used to apply regression algorithms for beginners. There are no missing value and the data set is small too.
   The data set gives the second hand price of cars and its features like:
   
-- v.id
-- on road old
-- on road now
-- years
-- km
-- rating
-- condition
-- economy
-- top speed
-- hp
-- torque
+- v.id (simply ID, which increments)
+- on road old (unfortunately, author hasn't provided explanation on this value)
+- on road now (unfortunately, author hasn't provided explanation on this value)
+- years (how old is vehicle)
+- km (mileage of the car)
+- rating (simply rating from 1 to 5)
+- condition (one more rating from 1 to 10)
+- economy (dicount for car)
+- top speed (what speed can vehicle develop)
+- hp (horse power)
+- torque 
 - current price
   
-  
+# Worlflow
+
+   In this paper we will explore each value separately (in parts 1-2) and see how they are distributed. We will also make some connections between central tendency measures-distribution graphs and between some variance values. In part 3 we will perform regression against targeted value and we will try to predict its future values. Part 4 will be devoted to off-top lottery computations, and later in part 5 we will finalize our regression by evaluating testing dataset. 
+
+
+# Part 1   
   Let's start with observing what types of variables there are in this data set:
 
 ```{r echo = FALSE}
@@ -116,7 +119,7 @@ ggplot(df_cars, aes(price)) + geom_histogram(aes(y = ..density..)) +
 
   From the distribution graphs above we can conclude:
   
-- there is approximately even ratio between amount of cars for each rating and "age" of a car
+- there is approximately an even ratio between amount of cars for each rating and "age" of a car
 - most of the cars have middle price rather than low or high
   
   Speaking of graphs themselves, there are no skewed graphs - rather multimodal. Car price distribution looks close to normal bell-shaped distribution. Since it is the only one to have normal distribution we can target it later for regression.
@@ -127,10 +130,12 @@ ggplot(df_cars, aes(price)) + geom_histogram(aes(y = ..density..)) +
   In this part we will concentrate on examining each parameter separately.
   
 ### Mean values
-#### Mean of mileage
-```{r  message=FALSE, warning=FALSE, echo=FALSE}
-library(ggplot2)
 
+  Mean is a simple value which is calculated by taking the sum of the values and dividing it by the number of records in dataset.
+#### Mean of mileage
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library(ggplot2)
+# the example of code will be shown once
 mean(km)
 ```
 #### Mean of car age
@@ -178,12 +183,16 @@ mean(price)
 
 
 ### Mode values
+  
+  Mode is the value which occurs with the highest frequency.
 #### Mode of mileage
-```{r message=FALSE, warning=FALSE, echo=FALSE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 library(DescTools)
-
+# the example of code will be shown once
 Mode(km)
 ```
+This computations show that values 52701, 130004, 132215 are the greatest values among mileage records. And all of the met with frequency = 2. 3 values for mode is a bit unusual, but we will discuss it further.
+
 #### Mode of car age
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(DescTools)
@@ -196,6 +205,9 @@ library(DescTools)
 
 Mode(rating)
 ```
+  
+  Here we can see how tricky mode might be. From the first glance and not knowing what is the mean or median we could say that most of the cars have rating 4/5, but considering that the total amount of cars is 1000 we know for sure it's not the major value.
+  
 #### Mode of condition rating
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 library(DescTools)
@@ -228,15 +240,16 @@ Mode(price)
 ```
 
 
-  Let's discuss mode a bit. As we can see, the result went a bit off for mileage mode. But actually it's not off but rather demonstrates some of the "disadvantages" of mode:
+  Now let's get back to mileage and price mode. Why there are three values instead of 1? And why price has no mode? To understand it we should refer to the properties of mode:
   
 - mode is unstable when the data consist of a small number of values;
-- data can have more than one mode or no mode at all;
+- data can have more than one mode or no mode at all - this is the case for price. It means no price occurs twice in set;
+- if there are several mode values which are met with the same frequency we can conclude that distribution graph is meant to have several peaks.
     
-  Though it is often considered to be a disadvantage, it's just another way to make some conclusions upon given data. If we have several values which are met with the same frequency we can conclude that distribution graph is meant to have several peaks. In other words by computing mode of mileage we can already say that the distribution graph of this value is meant to be multimodal. And if we go back to our mileage graph we will see that it's indeed multimodal.
+  Last statement is the case for mileage. In other words, by computing the mode of mileage we could already say that the distribution graph of this value is meant to be multimodal. And vice versa. Let's we go back to mileage distribution graph and we will see that it's indeed multimodal.
   
   
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(df_cars, aes(km)) + geom_histogram(aes(y = ..density..)) + 
   geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.2) +
   ggtitle("Distribution of car mileage") +
@@ -246,9 +259,11 @@ ggplot(df_cars, aes(km)) + geom_histogram(aes(y = ..density..)) +
   
 
 ### Median values
-#### Median of mileage
-```{r  message=FALSE, warning=FALSE, echo=FALSE}
 
+  Median is the value which equals to 50th percentile in set.
+#### Median of mileage
+```{r  message=TRUE, warning=FALSE, echo=FALSE}
+# the example of code will be shown once
 median(km)
 ```
 #### Median of car age
@@ -287,13 +302,28 @@ median(torque)
 median(price)
 ```
   
+  Let's note that median of price is very close to the mean of price which equals 308520.2. This means that values in set are ~equally spaced. Again, it points to the shape of distribution. 
+  
 ### Variabilty
+  First calues to be computed is range, the interquartile range, then variance (or average squared difference).
 #### Mileage
 ```{r}
 Range(km)
 IQR(km)
 var(km)
 ```
+  From the computations above we can say:
+    - mileage of each star in the set lays in a range between 50324 and 149902 KMs
+    - range between Q1 and Q equals 50680.5
+    - variance or average squared difference of the scores from the mean equals 849749507 - what is a very big value which indicates that numbers in set are far from the mean value and far from each other **or** it might also state that there are some outlining values which add great weight to this number. 
+    So let's `trim` mileage and try again.
+
+```{r}
+Range(Trim(km, trim = 0.2))
+IQR(Trim(km, trim = 0.2))
+var(Trim(km, trim = 0.2))
+```
+   We removed 20% of lowest and greatest values and result is still a very large value what proves that deviations from mean are quite big for this parameter. We can conclude that values in this set are not equally spaced. Most of them are much higher or lower than the mean value. Also we can connect it with range: mileage has a great range therefor it has a great variance too.
 
 #### Car age
 ```{r}
@@ -302,33 +332,12 @@ IQR(years)
 var(years)
 ```
 
-  [DELETE]  
-  From the computations above we can say:
-    - luminosity of each star in the set lays in a range between 0.8 and 849420 lumens
-    - range between Q1 and Q equals 198050
-    - variance or average squared difference of the scores from the mean equals 32195930524 - it is a very big value which indicates that numbers in set are far from mean and far from each other **or** it might also state that there are some outlining values which add great weight to this number. 
-    So let's `trim` luminosity and try again. By the way, we could have trimmed luminosity, temperature and radius sets in the very beginning as good practice, because those distributions have extremely skewed graphs.
-    [DELETE]  
-  
-  [DELETE]  
-```{r}
-```
-   We removed 20% of lowest and greatest values and result is still a very large value what proves that deviations from mean are quite big for this parameter. 
-     [DELETE]  
-
 #### Discount
 ```{r}
 Range(discount)
 IQR(discount)
 var(discount)
 ```  
- 
-  From the computations above we can say:
-  
-- radius of each star in the set lays in a range between 0.0084 and 1948.5 
-- range between Q1 and Q3 equals 42.64725, compairing it o the main ramge we can conclude that major amount of records are below Q3
-- variance or average squared difference of the scores from the mean equals 267450.1 - it is a  big value too, but not in terms of this data set
-
 
 #### Maximum speed
 ```{r}
@@ -343,9 +352,6 @@ Range(torque)
 IQR(torque)
 var(torque)
 ``` 
-  [CONCLUSIONS]
-
-  [CONCLUSIONS]
 
 #### Price
 ```{r}
@@ -354,20 +360,22 @@ IQR(price)
 var(price)
 ```   
 
+#### Summary
+  Now we have explored all values separately and know how to interpret, interconnect and read distribution, central tendency and variability computations. It also helped us to understand what parameter to target in regression - price. 
   
 ---
 # Part 3
   
-  In this part we will explore some dependencies between known parameters of the stars in our dataset. 
-  Let's choose one parameter which we will target in this part of work. This parameter will be out dependent value, which means we will explore how and how much it is influenced by other parameters. 
-  **Current price** is going to be such parameter. It means we will investigate what price of a car in second-hand market depends on.
+  In this part we will explore some dependencies between known parameters of cars in dataset. 
+  We have already chosen the parameter which will ne our targeted one. This parameter will be a dependent value, which means we will explore how and how much it is influenced by other parameters. 
+  We will investigate what **Current price**  of a car in second-hand market depends on and we will try to predict how it might change.
 
   
 ## Correlations and correlation matrix
   
   Purpose of this computation is to find what values correlate with price the most.
   
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(corrplot)
 
 cars_cor <- cor(cars)
@@ -375,10 +383,17 @@ corrplot(cars_cor, method ="pie", type="lower")
 ```
   
   
-  As we can see observe from the correlation matrix above, the highest correlation is between mileage(km)-price pair, we can say that this values are connected and assume that they have cause-effect relationship. Their correlation coefficient is negative which means that with the growth of one parameter the other one lowers simultaneously. There are also several positive correlations (both arguments grow simultaneously). And though condition rating doesn't have very high correlation to price, I think it will be interesting to compute a scatter plot for it just to compare high/low correlation scatter plots.
-  Let's take those three pairs into further steps and build scatter plots for them.
+  As we can see observe from the correlation matrix above, the highest correlation is between mileage(km)-price pair, we can say that this values are connected and assume that they have cause-effect relationship. Their correlation coefficient is negative which means that with the growth of one parameter the other one lowers simultaneously. There are also several positive correlations (both arguments grow simultaneously).
+  Also we can note an interesting fact: neither rating nor condition rating correlate with anything significantly. This means they were given rather spontaneously by someone without basing on cars' real qualities.
   
-```{r}
+  
+## Scatter plots
+
+  Let's plot the most important for us scatter plot: price-mileage. It will reveal whether they really correlate or there are outliers to blame. 
+  And also though condition rating doesn't have very high correlation to price, I think it will be interesting to compute a scatter plot for it just to compare high/low correlation scatter plots.
+  
+  
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(DescTools)
 library(hrbrthemes)
@@ -400,7 +415,7 @@ ggplot(cars, aes(x = `condition rating`, y = price)) +
 
   Let's take price-mileage pair for further work.
   
-```{r}
+```{r echo=FALSE}
 
 lm_model <- lm(price~km)
 lm_model
@@ -417,17 +432,17 @@ plot(price~km, ylim=c(0, 650000)) +
   It's not a surprise that plot line proofs tendency and follows scatter plot, so let's devote more time to summary. 
   
 #### Residuals
-   From the first glance median is a large value and isn't close to 0 which states that positive residual is greater than negative (Min/Max), but considering we deal with prices like 300 000 it's not a big fluctuation. Lets see a graph of residuals to proof that:
+   From the first glance `median` seems to be a large value far above 0 (zero is what we aim for). This states positive residual is greater than negative (Min/Max), but considering we deal with prices like 300 000 it's not a big fluctuation. Lets see a graph of residuals to proof that:
   
   
 ```{r}
 boxplot(lm_model[['residuals']], main='Boxplot: Residuals', ylab='residual value')
 ```
   
-  As mentioned above, this boxplot proofs indeed that on the given scale fluctuation of median isn't critical and it's quite close to zero. Plus, upper and lower bounds are quite symmetrical too. This states that prediction can be considered as a trustworthy.
+  As mentioned above, this boxplot proofs indeed that on the given scale fluctuation of median isn't critical and it's quite close to zero line. Plus, upper and lower bounds are quite symmetrical too. This states that prediction can be considered as a trustworthy.
   
 #### Coefficients
-  **Estimates** tells us that when mileage tends to zero, price tends to the value of 700 000.
+  **Estimates** tells us that when mileage tends to zero, price tends to the value of ~700 000.
   **Standard interval** gives us the confidence interval. From the code below we can say with 97% accuracy that with mileage -3.953173 car price will be 724290.555115, but since negative mileage isn't possible - we go back to what was said in ***estimates*** part.
 
 ```{r}
@@ -438,14 +453,15 @@ confint(lm_model)
   **Pr(>|t|) ** is the [p-value](https://en.wikipedia.org/wiki/P-value) for the individual coefficient.
 
 #### Residual standard error
-  gives an idea of how large the prediction error is in the given sample. [More about degrees of freedom and how to read them.](https://www.investopedia.com/terms/d/degrees-of-freedom.asp)
+  gives an idea of how large the prediction error is in the given sample. 5000 is a insignificant values for such a grest values. [More about degrees of freedom and how to read them.](https://www.investopedia.com/terms/d/degrees-of-freedom.asp)
   
 #### Multiple R-squared
   or the Coefficient of Determination - coefficient showing how sure we can be about our predictions. 0.87 is a very high value which gives us the right to say predictions will be made with almost 90% accuracy.
   
 ### Summary
 
-  With given data we can compute regression and predict price for cars on second-hand market. And with accuracy of 87% we can say that a car with almost zero mileage (or new car) would cost around 700k.
+  With given data we can compute regression and predict price for cars on second-hand market. And with accuracy of 87% we can say that a car with almost zero mileage (or a new car which somehow ended up on a second-hand market...) would cost around 700 000.
+  
   
 # Part 4: Lotto Super 7
   
@@ -514,6 +530,7 @@ prob(n = 47, r = 7) / 3
 
   All results can be checked [here](https://www.lotterycritic.com/lottery-calculators/lottery-odds-calculator/#odds).
   
+  
 # Part 5
 
   In this part we will split our dataset into testing set and training set.
@@ -529,15 +546,12 @@ cars_train <- cars[cars_split, ]
 
 #creating test data set by not selecting the output row values
 cars_test <- cars[-cars_split, ]
-
-cars_test
-cars_train
 ```
 
   Now that we have our training and testing datasets we can proceed with training regression model on training set. Then we will compare the outcome against results of testing set.
   
 #### Training set
-```{r}
+```{r echo=FALSE, warning=FALSE}
 library(ggplot2)
 library(DescTools)
 library(hrbrthemes)
@@ -551,7 +565,7 @@ plot(cars_train$`current price`~cars_train$km, xlab = "km (training set)", ylab 
 ```
 #### Testing set 
 
-  Let's do regression for testing set and compare it to results of training set.
+  Let's do regression for testing set and compare its results to the results of training set.
   
 ```{r}
 lm_test <- lm(cars_test$`current price`~cars_test$km)
@@ -563,14 +577,14 @@ plot(cars_test$`current price`~cars_test$km, xlab = "km (testing set)", ylab = "
 ```
 
 ## Metrics
-  We can see from the summaries that results are quite close (for example, estimates are almost the same), but for more precise evaluation we will apply some metrics on our testing set. Some of the metrics from summaries were discussed and explained in step 3, so we will omit their explanation here.
+  We can see from the summaries that results are quite close (for example, estimates are almost the same), but for precise evaluation of our testing set we will apply some metrics on it. Some of the metrics, which come from `summary`, were discussed and explained in step 3, so we will omit their explanation here.
   
   
 #### Root Mean Squared Error
 
   RMSE shows us the error rate of a model.
   
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(qpcR)
 
 RMSE(lm_test)
@@ -590,7 +604,7 @@ MAPE(lm_test)
  
 ### Summary 
    Let's sum up the metrics of our testing set.
-   **R squared** equals 0.8769 which means our predictions' accuracy is 87.69% (the same value as we had for our general model which states that testing model performs well). MAPE deviations are nor higher that 15.5% which is also a good result implying out predictions are reliable. 
+   **R squared** equals 0.8769 which means our predictions' accuracy is 87.69% (the same value as we had for our general model which states that testing model performs well). **MAPE** deviations are not higher that 15.5% which is also a good result implying out predictions are reliable. This in general means that we can once more with accuracy 87% say that the price of a car with almost zero mileage will equal ~700000.
   
 
 
