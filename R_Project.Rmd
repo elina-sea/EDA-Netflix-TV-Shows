@@ -408,7 +408,7 @@ summary(lm_model)
 
 plot(price~km, ylim=c(0, 650000)) + 
   abline(lm_model,col="red", lwd=3) +
-  title("Scatter plot: price vs mileage") +
+  title("Linear Regression: price vs mileage") +
   theme_ipsum()
 
 ```
@@ -514,4 +514,107 @@ prob(n = 47, r = 7) / 3
 
   All results can be checked [here](https://www.lotterycritic.com/lottery-calculators/lottery-odds-calculator/#odds).
   
+# Part 5
+
+  In this part we will split our dataset into testing set and training set.
+  
+```{r}
+#create a list of random number ranging from 1 to number of rows from actual data 
+#and 70% of the data into training data  
+
+cars_split = sort(sample(nrow(cars), nrow(cars)*.7))
+
+#creating training data set by selecting the output row values
+cars_train <- cars[cars_split, ]
+
+#creating test data set by not selecting the output row values
+cars_test <- cars[-cars_split, ]
+
+cars_test
+cars_train
+```
+
+  Now that we have our training and testing datasets we can proceed with training regression model on training set. Then we will compare the outcome against results of testing set.
+  
+#### Training set
+```{r}
+library(ggplot2)
+library(DescTools)
+library(hrbrthemes)
+
+lm_train <- lm(cars_train$`current price`~cars_train$km)
+summary(lm_train)
+
+plot(cars_train$`current price`~cars_train$km, xlab = "km (training set)", ylab = "price (training set)", ylim=c(0, 650000) )
+  abline(lm_model,col="red", lwd=3) +
+  title("Linear Regression on Testing Set: Price vs Mileage") 
+```
+#### Testing set 
+
+  Let's do regression for testing set and compare it to results of training set.
+  
+```{r}
+lm_test <- lm(cars_test$`current price`~cars_test$km)
+summary(lm_test)
+
+plot(cars_test$`current price`~cars_test$km, xlab = "km (testing set)", ylab = "price (testing set)", ylim=c(0, 650000) )
+  abline(lm_model,col="red", lwd=3) +
+  title("Linear Regression on Training Set: Price vs Mileage") 
+```
+
+## Metrics
+  We can see from the summaries that results are quite close (for example, estimates are almost the same), but for more precise evaluation we will apply some metrics on our testing set. Some of the metrics from summaries were discussed and explained in step 3, so we will omit their explanation here.
+  
+  
+#### Root Mean Squared Error
+
+  RMSE shows us the error rate of a model.
+  
+```{r}
+library(qpcR)
+
+RMSE(lm_test)
+```
+  
+  From this calculation we can see that the difference between predicted and real prices will be 44348.31. Let's figure out whether it's a lot or not by calculating MAPE. 
+  
+#### Mean Absolute Percentage Error
+
+
+```{r}
+MAPE(lm_test)
+```
+
+ 15.2% is an average difference between the predicted value and the actual value.
+ 
+ 
+### Summary 
+   Let's sum up the metrics of our testing set.
+   **R squared** equals 0.8769 which means our predictions' accuracy is 87.69% (the same value as we had for our general model which states that testing model performs well). MAPE deviations are nor higher that 15.5% which is also a good result implying out predictions are reliable. 
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
